@@ -125,6 +125,7 @@
 
         // Load users from Supabase
         async function loadUsers() {
+            console.log('Fetching users from Supabase...');
             const { data, error } = await supabase
                 .from('profiles')
                 .select('*');
@@ -132,12 +133,15 @@
                 console.error('Error loading users:', error);
                 return [];
             }
+            console.log('Supabase response:', { data, error });
             return data || [];
         }
 
         // Display users in the table
         async function displayUsers() {
+            console.log('Loading users...');
             const users = await loadUsers();
+            console.log('Loaded users:', users);
             const tbody = document.getElementById('userTableBody');
             tbody.innerHTML = '';
             
@@ -153,17 +157,22 @@
                 `;
                 tbody.appendChild(row);
             });
+            console.log('Users displayed');
         }
 
         // Add or update user
         document.getElementById('userForm').addEventListener('submit', async function(e) {
+            console.log('Form submitted');
             e.preventDefault();
             const id = document.getElementById('userId').value;
             const name = document.getElementById('name').value;
             const email = document.getElementById('email').value;
             
+            console.log('Form data:', { id, name, email });
+            
             try {
                 if (id) {
+                    console.log('Updating user:', id);
                     // Update existing user
                     const { error } = await supabase
                         .from('profiles')
@@ -171,6 +180,7 @@
                         .eq('id', id);
                     if (error) throw error;
                 } else {
+                    console.log('Adding new user');
                     // Add new user
                     const { error } = await supabase
                         .from('profiles')
@@ -178,6 +188,7 @@
                     if (error) throw error;
                 }
                 
+                console.log('User saved successfully');
                 await displayUsers();
                 resetForm();
             } catch (error) {
